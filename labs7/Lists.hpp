@@ -1,5 +1,5 @@
-#ifndef LISTS_HPP
-#define LISTS_HPP
+#ifndef LABS7_LISTS_HPP
+#define LABS7_LISTS_HPP
 
 #include <cstddef>
 #include <iostream>
@@ -8,7 +8,6 @@
 
 template <typename T>
 struct Node {
-    // Вузол списку зберігає значення, посилання на наступний вузол і попередній вузол.
     T data;
     std::shared_ptr<Node<T>> next;
     std::weak_ptr<Node<T>> previous;
@@ -19,7 +18,6 @@ struct Node {
 template <typename T>
 class SinglyLinkedList {
 public:
-    // Додає елемент на початок однозв'язного списку.
     void push_front(const T& value) {
         auto node = std::make_shared<Node<T>>(value);
         node->next = head_;
@@ -32,7 +30,6 @@ public:
         ++size_;
     }
 
-    // Додає елемент у кінець однозв'язного списку.
     void push_back(const T& value) {
         auto node = std::make_shared<Node<T>>(value);
 
@@ -46,9 +43,8 @@ public:
         ++size_;
     }
 
-    // Видаляє перший елемент і повертає його значення.
     T pop_front() {
-        ensure_not_empty();
+        check_not_empty();
 
         T value = head_->data;
         head_ = head_->next;
@@ -61,9 +57,8 @@ public:
         return value;
     }
 
-    // Видаляє останній елемент і повертає його значення.
     T pop_back() {
-        ensure_not_empty();
+        check_not_empty();
 
         if (size_ == 1) {
             return pop_front();
@@ -81,7 +76,6 @@ public:
         return value;
     }
 
-    // Повертає елемент за індексом з перевіркою меж.
     T& at(std::size_t index) {
         return node_at(index)->data;
     }
@@ -90,7 +84,6 @@ public:
         return node_at(index)->data;
     }
 
-    // Вставляє новий елемент у вказану позицію.
     void insert(std::size_t index, const T& value) {
         if (index > size_) {
             throw std::out_of_range("Insert index is out of range");
@@ -113,7 +106,6 @@ public:
         ++size_;
     }
 
-    // Видаляє елемент за індексом і повертає його значення.
     T remove(std::size_t index) {
         if (index == 0) {
             return pop_front();
@@ -137,17 +129,14 @@ public:
         return value;
     }
 
-    // Повертає кількість елементів у списку.
     std::size_t size() const {
         return size_;
     }
 
-    // Перевіряє, чи список порожній.
     bool empty() const {
         return size_ == 0;
     }
 
-    // Шукає елемент у списку. Якщо елемент не знайдено, повертає -1.
     int find(const T& value) const {
         auto current = head_;
         int index = 0;
@@ -164,7 +153,6 @@ public:
         return -1;
     }
 
-    // Виводить список на екран за допомогою cout.
     void print() const {
         auto current = head_;
         std::cout << "[";
@@ -182,19 +170,16 @@ public:
     }
 
 private:
-    // Вказівники на початок, кінець і поточний розмір списку.
     std::shared_ptr<Node<T>> head_;
     std::shared_ptr<Node<T>> tail_;
     std::size_t size_ = 0;
 
-    // Генерує виняток, якщо список порожній.
-    void ensure_not_empty() const {
+    void check_not_empty() const {
         if (empty()) {
             throw std::underflow_error("List is empty");
         }
     }
 
-    // Повертає вузол за індексом.
     std::shared_ptr<Node<T>> node_at(std::size_t index) const {
         if (index >= size_) {
             throw std::out_of_range("Index is out of range");
@@ -212,7 +197,6 @@ private:
 template <typename T>
 class DoublyLinkedList {
 public:
-    // Додає елемент на початок двозв'язного списку.
     void push_front(const T& value) {
         auto node = std::make_shared<Node<T>>(value);
         node->next = head_;
@@ -230,7 +214,6 @@ public:
         ++size_;
     }
 
-    // Додає елемент у кінець двозв'язного списку.
     void push_back(const T& value) {
         auto node = std::make_shared<Node<T>>(value);
         node->previous = tail_;
@@ -248,9 +231,8 @@ public:
         ++size_;
     }
 
-    // Видаляє перший елемент і повертає його значення.
     T pop_front() {
-        ensure_not_empty();
+        check_not_empty();
 
         T value = head_->data;
         head_ = head_->next;
@@ -265,13 +247,11 @@ public:
         return value;
     }
 
-    // Видаляє останній елемент і повертає його значення.
     T pop_back() {
-        ensure_not_empty();
+        check_not_empty();
 
         T value = tail_->data;
-        auto previous = tail_->previous.lock();
-        tail_ = previous;
+        tail_ = tail_->previous.lock();
 
         if (tail_) {
             tail_->next.reset();
@@ -283,7 +263,6 @@ public:
         return value;
     }
 
-    // Повертає елемент за індексом з перевіркою меж.
     T& at(std::size_t index) {
         return node_at(index)->data;
     }
@@ -292,7 +271,6 @@ public:
         return node_at(index)->data;
     }
 
-    // Вставляє новий елемент у вказану позицію.
     void insert(std::size_t index, const T& value) {
         if (index > size_) {
             throw std::out_of_range("Insert index is out of range");
@@ -319,7 +297,6 @@ public:
         ++size_;
     }
 
-    // Видаляє елемент за індексом і повертає його значення.
     T remove(std::size_t index) {
         if (index == 0) {
             return pop_front();
@@ -340,17 +317,14 @@ public:
         return value;
     }
 
-    // Повертає кількість елементів у списку.
     std::size_t size() const {
         return size_;
     }
 
-    // Перевіряє, чи список порожній.
     bool empty() const {
         return size_ == 0;
     }
 
-    // Шукає елемент у списку. Якщо елемент не знайдено, повертає -1.
     int find(const T& value) const {
         auto current = head_;
         int index = 0;
@@ -367,7 +341,6 @@ public:
         return -1;
     }
 
-    // Виводить список на екран за допомогою cout.
     void print() const {
         auto current = head_;
         std::cout << "[";
@@ -385,19 +358,16 @@ public:
     }
 
 private:
-    // Вказівники на початок, кінець і поточний розмір списку.
     std::shared_ptr<Node<T>> head_;
     std::shared_ptr<Node<T>> tail_;
     std::size_t size_ = 0;
 
-    // Генерує виняток, якщо список порожній.
-    void ensure_not_empty() const {
+    void check_not_empty() const {
         if (empty()) {
             throw std::underflow_error("List is empty");
         }
     }
 
-    // Повертає вузол за індексом. Пошук починається з ближчого краю списку.
     std::shared_ptr<Node<T>> node_at(std::size_t index) const {
         if (index >= size_) {
             throw std::out_of_range("Index is out of range");
@@ -422,3 +392,4 @@ private:
 };
 
 #endif
+
